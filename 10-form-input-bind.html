@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>폼 입력 바인딩</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Input 문자열</h2>
+<span>
+    input 값의 value와 모델의 data 양방향 바인딩
+</span>
+<div id="app1" class="sample">
+    <input v-model="message" placeholder="여기를 수정해보세요">
+    <input type="button" @click="message=''" value="Model클리어">
+    <p>메시지: {{ message }}</p>
+</div>
+
+<script>
+    var app1 = new Vue({
+        el: '#app1',
+        data: {
+            message:''
+        },
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Textarea 문자열</h2>
+<span>
+    일반적으로 &lt;textarea&gt;contents....&lt;/textarea&gt; 와 같이 작성하지만,
+    vue 보간에서는 작동하지 않음.<br>
+    v-model을 사용하여 작성해야 함.
+</span>
+<div id="app2" class="sample">
+    <p style="white-space: pre-line">{{ message }}</p>
+    <br>
+    <textarea v-model="message" placeholder="여러줄을 입력해보세요"></textarea>
+</div>
+
+<script>
+    var app2 = new Vue({
+        el: '#app2',
+        data: {
+            message:''
+        },
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Checkbox</h2>
+<span>
+
+</span>
+<div id="app3" class="sample">
+    <h3>단일 체크</h3>
+    <input type="checkbox" id="checkId" v-model="singleCheck">
+    <label for="checkId">{{ singleCheck }}</label>
+
+    <h3>다중 체크</h3>
+    <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+    <label for="jack">Jack</label>
+    <input type="checkbox" id="john" value="John" v-model="checkedNames">
+    <label for="john">John</label>
+    <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+    <label for="mike">Mike</label>
+    <br>
+    <span>체크한 이름: {{ checkedNames }}</span>
+
+    <h3>체크박스 값 바인딩</h3>
+    <input type="checkbox" v-model="checkedValue"
+           v-bind:true-value="'on'"
+           v-bind:false-value="'off'">
+    <span>체크한 값: {{ checkedValue }}</span>
+
+</div>
+
+<script>
+    var app3 = new Vue({
+        el: '#app3',
+        data: {
+            singleCheck:true,
+            checkedNames: [],
+            checkedValue:''
+        },
+    })
+
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Radio</h2>
+<span>
+
+</span>
+<div id="app4" class="sample">
+    <h3>단일 체크</h3>
+    <input type="radio" id="one" value="One" v-model="picked">
+    <label for="one">One</label>
+    <br>
+    <input type="radio" id="two" value="Two" v-model="picked">
+    <label for="two">Two</label>
+    <br>
+    <span>선택: {{ picked }}</span>
+
+</div>
+
+<script>
+    var app4 = new Vue({
+        el: '#app4',
+        data: {
+            picked:'Two'
+        },
+    })
+
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Select</h2>
+<span>
+
+</span>
+<div id="app5" class="sample">
+    <h3>단일 셀렉트</h3>
+    <select v-model="singleSelected ">
+        <option disabled value="">Please select one</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+    </select>
+    <span>선택함: {{ singleSelected }}</span>
+
+    <h3>다중 셀렉트</h3>
+    <select v-model="multiSelected" multiple>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+    </select>
+    <br>
+    <span>Selected: {{ multiSelected }}</span>
+
+    <h3>v-for 를 이용한 동적 옵션 렌더링</h3>
+    <select v-model="loopSelected">
+        <option v-for="option in loopOptions" v-bind:value="option.value">
+            {{ option.text }}
+        </option>
+    </select>
+    <span>Selected: {{ loopSelected }}</span>
+
+
+    <h3>동적 값 바인딩(객체이용)</h3>
+    <select v-model="selectObj">
+        <option v-bind:value="{ age: 30 }">age=30</option>
+        <option v-bind:value="{ age: 40 }">age=40</option>
+        <option v-bind:value="{ sex: 'male' }">sex=male</option>
+        <option v-bind:value="{ sex: 'female' }">sex=male</option>
+        <option v-bind:value="{ age: 40, sex: 'female' }">age=40,sex=male</option>
+    </select>
+    <span>Selected: Age={{  selectObj.age  }}, Sex={{  selectObj.sex}} </span>
+
+</div>
+
+<script>
+    var app5 = new Vue({
+        el: '#app5',
+        data: {
+            singleSelected : 'A',
+            multiSelected:['B','C'],
+            loopSelected: 'A',
+            loopOptions: [
+                { text: 'One', value: 'A' },
+                { text: 'Two', value: 'B' },
+                { text: 'Three', value: 'C' }
+            ],
+            selectObj:{
+                age:0,
+                sex:''
+            }
+        },
+    })
+
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>기타 수식어</h2>
+<span>
+
+    <p>
+        "input" 대신 "change" 이후에 동기화
+        &lt;input v-model.lazy="msg"&gt;
+    </p>
+
+    <p>
+        사용자 입력이 자동으로 숫자로 형변환
+        &lt;input v-model.number="age" type="number"&gt;
+    </p>
+
+    <p>
+        앞뒤 공백을 제거
+        &lt;input v-model.trim="msg"&gt;
+    </p>
+
+</span>
+
+</body>
+</html>

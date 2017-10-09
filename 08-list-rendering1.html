@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>목록 랜더링</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>배열을 반복하여 랜더링</h2>
+<div class="comments">
+    item in items 형태의 문법을 사용.
+    items는 보여줄 데이타의 배열, item은 반복되는 개별 항목의 별칭
+</div>
+
+<div id="app1" class="sample">
+    <span>배열 순환</span>
+    <ul>
+        <li v-for="item in items">
+            {{parentMessage}} - {{ item.message }}
+        </li>
+    </ul>
+
+    <span>배열 순환, INDEX 참조</span>
+    <ul>
+        <li v-for="(item, index) in items">
+            {{ index }} - {{ item.message }}
+        </li>
+    </ul>
+</div>
+<script>
+    var app1 = new Vue({
+        el:'#app1',
+        data: {
+            parentMessage: "Parent",
+            items: [
+                { message: 'Foo' },
+                { message: 'Bar' }
+            ]
+        },
+    })
+</script>
+
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>Template 블럭 활용</h2>
+<div class="comments"></div>
+
+<div id="app3" class="sample">
+    <ul>
+        <template v-for="item in items">
+            <li>{{ item.message }}</li>
+            <li class="divider">----------------</li>
+        </template>
+    </ul>
+</div>
+<script>
+    var app3 = new Vue({
+        el:'#app3',
+        data: {
+            items: [
+                { message: 'Foo' },
+                { message: 'Bar' }
+            ]
+        },
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>객체 속성 순환</h2>
+<div class="comments">
+    객체를 반복할 때 순서는 Object.keys()의 키 나열 순서에 따라 결정.
+    JavaScript 엔진의 구현에 의존.
+</div>
+
+<div id="app4" class="sample">
+    <span>value 순환</span>
+    <ul >
+        <li v-for="value in object">
+            {{ value }}
+        </li>
+    </ul>
+
+    <span>key/value 순환</span>
+    <ul >
+        <li v-for="(value, key) in object">
+            {{ key }}: {{ value }}
+        </li>
+    </ul>
+
+    <span>key/value/index 순환</span>
+    <ul >
+        <li v-for="(value, key, index) in object">
+            {{index}}. {{ key }}: {{ value }}
+        </li>
+    </ul>
+</div>
+<script>
+    var app4 = new Vue({
+        el:'#app4',
+        data: {
+            object: {
+                firstName: 'John',
+                lastName: 'Doe',
+                age: 30
+            }
+        },
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>횟수 반복</h2>
+<div class="comments">
+    n은 정수
+</div>
+
+<div id="app5" class="sample">
+    <span v-for="n in 10">{{ n }} </span>
+</div>
+<script>
+    var app5 = new Vue({
+        el:'#app5',
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>v-for 와 v-if </h2>
+<div class="comments">
+    같은 노드에 v-for와 v-if 가 함께 선언된다면, v-for의 우선순위가 높다.
+    즉 반복되면서 if가 실행된다.
+</div>
+
+<div id="app6" class="sample">
+    <li v-for="todo in todos" v-if="!todo.isComplete">
+        {{ todo }}
+    </li>
+</div>
+<script>
+    var app6 = new Vue({
+        el:'#app6',
+        data: {
+            todos:[
+                {task:'todo1',isComplete:false},
+                {task:'todo2',isComplete:false},
+                {task:'todo3',isComplete:true},
+                {task:'todo4',isComplete:false}
+            ]
+        },
+
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>key 사용</h2>
+<div class="comments">
+    렌더링된 엘리먼트 목록을 갱신할 때 사용될 수 있도록 key를 늘 정의해야 한다.
+</div>
+
+<div id="app7" class="sample">
+    <div v-for="item in items" v-bind:key="item.id">
+        {{items}}
+    </div>
+</div>
+<script>
+    var app7 = new Vue({
+        el:'#app7',
+        data: {
+            items:[
+                {id:'1',title:'t1'},
+                {id:'2',title:'t2'},
+                {id:'3',title:'t3'},
+            ]
+        },
+    })
+</script>
+
+</body>
+</html>

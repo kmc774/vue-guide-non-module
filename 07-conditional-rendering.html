@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>조건부 랜더링</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 랜더링 if / else </h2>
+<div class="comments">
+    조건부 블럭 안의 DOM 엘레먼트가 실제 만들어지고 삭제되는 로직을 수행함.<br>
+    랜더링 비용이 show에 비해 비쌈.
+</div>
+<div id="app1"  class="sample">
+    <h1 v-if="sw">Yes</h1>
+    <h1 v-else>No</h1>
+
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app1 = new Vue({
+        el:'#app1',
+        data: {
+            sw:true
+        },
+        methods:{
+            toggle : function(){
+                this.sw = !this.sw
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 랜더링 if / else-if / else </h2>
+<div class="comments"></div>
+
+<div id="app2" class="sample">
+    <div v-if="type === 1">
+        A
+    </div>
+    <div v-else-if="type === 2">
+        B
+    </div>
+    <div v-else-if="type === 3">
+        C
+    </div>
+    <div v-else>
+        Not A/B/C
+    </div>
+
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app2 = new Vue({
+        el:'#app2',
+        data: {
+            type:1
+        },
+        methods:{
+            toggle : function(){
+                this.type = (this.type + 1) %4
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 랜더링 template활용</h2>
+<div class="comments">
+    하나 이상의 엘리먼트를 묶어서 제어하려면 template 엘리먼트를 사용한다.<br>
+    template엘레먼트는 제어를 위한 가상 엘레먼트(wrapper)이므로 실제 랜더링 되지는 않는다.
+</div>
+<div id="app3" class="sample">
+    <template v-if="sw">
+        <h1>Title</h1>
+        <p>Paragraph 1</p>
+        <p>Paragraph 2</p>
+    </template>
+
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app3 = new Vue({
+        el:'#app3',
+        data: {
+            sw:true
+        },
+        methods:{
+            toggle : function(){
+                this.sw = !this.sw
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 랜더링 ELEMENT 재활용</h2>
+<div class="comments">
+    전환되는 엘레먼트가 동일하다면 다시 생성하지 않고 엘레먼트를 재활용하여 성능을 높인다.<br>
+    Input에 값을 넣고 toggle 해보자.
+</div>
+
+<div id="app4" class="sample">
+    <template v-if="loginType === 1 ">
+        <label>Username</label>
+        <input placeholder="Enter your username">
+    </template>
+    <template v-else>
+        <label>Email</label>
+        <input placeholder="Enter your email address">
+    </template>
+
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app4 = new Vue({
+        el:'#app4',
+        data: {
+            loginType:1
+        },
+        methods:{
+            toggle : function(){
+                this.loginType = (this.loginType + 1) % 2
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 랜더링 KEY를 이용하여 ELEMENT 재활용 방지</h2>
+<div class="comments">
+    key값을 명시함으로써 재활용을 막는다. Input에 값을 넣고 toggle 해보자.
+</div>
+
+<div id="app5" class="sample">
+    <template v-if="loginType === 1 ">
+        <label>Username</label>
+        <input placeholder="Enter your username" key="username-input">
+    </template>
+    <template v-else>
+        <label>Email</label>
+        <input placeholder="Enter your email address" key="email-input">
+    </template>
+
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app5 = new Vue({
+        el:'#app5',
+        data: {
+            loginType:1
+        },
+        methods:{
+            toggle : function(){
+                this.loginType = (this.loginType + 1) % 2
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건부 display (SHOW/HIDE) </h2>
+<div class="comments">
+    사용법은 v-if 와 동일함. DOM에 남아있고 단순히 display css 속성을 조정함.<br>
+    단, template 구문과 v-else 구문을 사용할 수 없음.
+</div>
+
+<div id="app6" class="sample">
+    <h1 v-show="sw">Hello!</h1>
+    <input type="button" value="Toggle" v-on:click="toggle">
+</div>
+<script>
+    var app6 = new Vue({
+        el:'#app6',
+        data: {
+            sw:1
+        },
+        methods:{
+            toggle : function(){
+                this.sw = (this.sw + 1) % 2
+            }
+        }
+    })
+</script>
+
+
+</body>
+</html>

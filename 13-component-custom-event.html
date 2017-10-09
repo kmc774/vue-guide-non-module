@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>컴퍼넌트 2 - 컴퍼넌트로 데이타 전달</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>하위 컴퍼넌트의 사용자 정의 이벤트 발생 및 리스닝 </h2>
+<div class="comments">
+    <pre>
+        하위 컴퍼넌트 사용 시 v-on:이벤트명 의 형태로 이벤트 수신이 가능하다.
+    </pre>
+</div>
+<div id="app1" class="sample">
+    <p>{{ total }}</p>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+</div>
+
+<script>
+    Vue.component('button-counter', {
+        template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+        data: function () {
+            return {
+                counter: 0
+            }
+        },
+        methods: {
+            incrementCounter: function () {
+                this.counter += 1
+                this.$emit('increment')
+            }
+        },
+    })
+
+
+    new Vue({
+        el:'#app1',
+        data: {
+            total: 0
+        },
+        methods: {
+            incrementTotal: function () {
+                this.total += 1
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>하위 컴퍼넌트의 Native 이벤트 리스닝 </h2>
+<div class="comments">
+    <pre>
+        v-on 에 .native 수식자를 사용
+    </pre>
+</div>
+<div id="app2" class="sample">
+    <p>{{ total }}</p>
+    <app2-button-counter v-on:click.native="incrementTotal"></app2-button-counter>
+    <app2-button-counter v-on:click.native="incrementTotal"></app2-button-counter>
+</div>
+
+<script>
+    Vue.component('app2-button-counter', {
+        template: '<button>Click</button>',
+        data: function () {
+            return {
+                counter: 0
+            }
+        }
+    })
+
+    new Vue({
+        el:'#app2',
+        data: {
+            total: 0
+        },
+        methods: {
+            incrementTotal: function () {
+                this.total += 1
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>.sync 수식어를 통한 향방향 바인딩</h2>
+<div class="comments">
+    <pre>
+        .sync를 가지는 속성는 하위 컴퍼넌트에서 직접 수정함. (event emit을 통해서)
+
+    </pre>
+</div>
+<div id="app3" class="sample">
+    <p>{{ total }}</p>
+
+    <app3-button :counter.sync="total"></app3-button>
+
+    <!-- 동일한 로직 -->
+    <!--<app3-button :counter="total" @update:counter="val => total = val"></app3-button>-->
+
+</div>
+
+<script>
+    Vue.component('app3-button', {
+        props: ['counter'],
+        template: '<button v-on:click="clicked">{{counter}}</button>',
+        methods:{
+            clicked:function(){
+
+                // Error : 상위 컴퍼넌트의 속성값과 바인딩 되어 있기 때문에, 직접 속성값을 변경하면 안된다.
+                /*this.counter = this.counter+1;
+                this.$emit('update:counter', this.counter );*/
+
+                var newVal = this.counter+1;
+                this.$emit('update:counter', newVal  );
+            }
+        }
+    })
+
+    new Vue({
+        el:'#app3',
+        data: {
+            total: 2
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>사용자 정의 이벤트를 사용하여 폼 입력 컴포넌트 만들기</h2>
+<div class="comments">
+    <pre>
+        v-model 처럼 작동하는 사용자 정의 이벤트 작성
+
+        < input v-model="something">
+        는 아래와 같이 변환 됨
+        < input
+                v-bind:value="something"
+                v-on:input="something = $event.target.value">
+
+        ref 속성은 상위 컴퍼넌트에서 해당 엘레먼트를 참조하기 위해 정의한다.
+        < input ref='myinput'>
+        - 상위 컴퍼넌트에서 $refs.myInput.value = 'newvalue' 과 같이 접근 가능.
+    </pre>
+</div>
+<div id="app4" class="sample">
+    <app4-currency-input v-model="price"></app4-currency-input>
+    {{price}}
+</div>
+
+<script>
+    Vue.component('app4-currency-input', {
+        props: ['value'],
+        template:
+            '<span>$<input ref="input" v-bind:value="value" ' +
+            '   v-on:input="updateValue($event.target.value)"></span>',
+        methods: {
+            // 값을 직접 업데이트하는 대신 이 메소드를 사용하여
+            // 입력 값에 대한 서식을 지정하고 배치 할 수 있습니다
+            updateValue: function (value) {
+
+                var formattedValue = value.trim().slice( 0,
+                        value.indexOf('.') === -1 ? value.length: value.indexOf('.') + 3
+                    )
+                if (formattedValue !== value) {
+                    this.$refs.input.value = formattedValue
+                }
+                this.$emit('input', Number(formattedValue))
+            }
+        }
+    })
+
+    new Vue({
+        el:'#app4',
+        data: {
+            price: ''
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2> 컴퍼넌트 입력 커스터마이징 </h2>
+<div class="comments">
+    <pre>
+
+    </pre>
+</div>
+<div id="app5" class="sample">
+    <app5-currency-input label="Price" v-model="price"></app5-currency-input>
+    <app5-currency-input label="Shipping" v-model="shipping"></app5-currency-input>
+    <app5-currency-input label="Handling" v-model="handling"></app5-currency-input>
+    <app5-currency-input label="Discount" v-model="discount"></app5-currency-input>
+
+    <p>Total: ${{ total }}</p>
+</div>
+<script src="https://cdn.rawgit.com/chrisvfritz/5f0a639590d6e648933416f90ba7ae4e/raw/974aa47f8f9c5361c5233bd56be37db8ed765a09/currency-validator.js"></script>
+
+<script>
+    Vue.component('app5-currency-input', {
+        template: '\
+            <div>\
+              <label v-if="label">{{ label }}</label>\
+              $\
+              <input\
+                ref="input"\
+                v-bind:value="value"\
+                v-on:input="updateValue($event.target.value)"\
+                v-on:focus="selectAll"\
+                v-on:blur="formatValue"\
+              >\
+            </div>'        ,
+        props: {
+            value: {
+                type: Number,
+                default: 0
+            },
+            label: {
+                type: String,
+                default: ''
+            }
+        },
+        mounted: function () {
+            this.formatValue()
+        },
+        methods: {
+            updateValue: function (value) {
+                var result = currencyValidator.parse(value, this.value)
+                if (result.warning) {
+                    this.$refs.input.value = result.value
+                }
+                this.$emit('input', result.value)
+            },
+            formatValue: function () {
+                this.$refs.input.value = currencyValidator.format(this.value)
+            },
+            selectAll: function (event) {
+                // Workaround for Safari bug
+                // http://stackoverflow.com/questions/1269722/selecting-text-on-focus-using-jquery-not-working-in-safari-and-chrome
+                setTimeout(function () {
+                    event.target.select()
+                }, 0)
+            }
+        }
+    })
+
+
+    new Vue({
+        el:'#app5',
+        data: {
+            price: 0,
+            shipping: 0,
+            handling: 0,
+            discount: 0
+        },
+        computed: {
+            total: function () {
+                return ((
+                    this.price * 100 +
+                    this.shipping * 100 +
+                    this.handling * 100 -
+                    this.discount * 100
+                ) / 100).toFixed(2)
+            }
+        }
+    })
+</script>
+
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>독립적인 컴퍼넌트간 통신</h2>
+<div class="comments">
+    <pre>
+        부모/자식의 관계가 아닌 컴퍼넌트간의 통신을 위해
+        비어있는 Vue 인스턴스를 이용한다.
+
+        복잡한 경우에는 전용 <a href="https://kr.vuejs.org/v2/guide/state-management.html" target="_blank">상태 관리 패턴</a>을 고려
+
+    </pre>
+</div>
+<div id="app6" class="sample">
+    <app6-input1 ></app6-input1>
+    <app6-label ></app6-label>
+</div>
+
+<script>
+    var eventBus = new Vue()
+
+    Vue.component('app6-input1',{
+        props:{
+            message:String
+        },
+        template:' <input v-bind:value="message" v-on:input="updateValue($event.target.value)"> ',
+        methods: {
+            updateValue: function (value) {
+                /** 버스를 통해 이벤트 전달 **/
+                eventBus.$emit('changed', value )
+            }
+        }
+    });
+
+    Vue.component('app6-label',{
+        data: function () {
+            return {message:'text'}
+        },
+        template:' <span>{{message}}</span> ',
+        created: function () {
+            var that = this;
+
+            /** 버스를 통해 이벤트 수신 **/
+            eventBus.$on('changed', function (value) {
+                that.message = value;
+            })
+        }
+    });
+
+    new Vue({
+        el:'#app6',
+        data: {
+        }
+    })
+</script>
+
+
+</body>
+</html>

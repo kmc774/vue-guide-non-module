@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Class 바인딩</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+    <style>
+        .active {
+            background-color: blueviolet;
+        }
+        .text-danger{
+            color: red;
+        }
+        .child{
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>객체로 class 토글</h2>
+<div class="comments"></div>
+<div id="app1" class="sample">
+    <div class="static" v-bind:class="{ active: isActive , 'text-danger': hasError}">
+        this is contents
+    </div>
+    <button v-on:click="isActive=!isActive" >Toggle [active]class</button>
+    <button v-on:click="hasError=!hasError" >Toggle [text-danger]class</button>
+</div>
+<script>
+    var app1 = new Vue({
+        el:'#app1',
+        data: {
+            isActive: true,
+            hasError:true
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>객체로 class 토글(object 전달)</h2>
+<div class="comments"></div>
+<div id="app2" class="sample">
+    <div class="static" v-bind:class="classObj">
+        this is contents
+    </div>
+    <button v-on:click="classObj.active=!classObj.active" >Toggle [active]class</button>
+    <button v-on:click="classObj['text-danger'] = !(classObj['text-danger'])" >Toggle ['text-danger']class</button>
+</div>
+<script>
+    var app2 = new Vue({
+        el:'#app2',
+        data: {
+            classObj:{
+                active: true,
+                'text-danger': true
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>객체로 class 토글 - 계산된 속성</h2>
+<div class="comments"></div>
+<div id="app3" class="sample">
+    <div class="static" v-bind:class="classObj">
+        this is contents
+    </div>
+    <button v-on:click="isActive=!isActive" >Toggle [active]class</button>
+    <button v-on:click="error = !error" >Toggle ['text-danger']class</button>
+</div>
+<script>
+    var app3 = new Vue({
+        el:'#app3',
+        data: {
+            isActive: true,
+            error: false
+        },
+        computed: {
+            classObj: function () {
+                return {
+                    active: this.isActive ,
+                    'text-danger': this.error
+                }
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>배열로 class 토글</h2>
+<div class="comments">
+    v-bind:class 에 전달하여 클래스 목록을 지정
+</div>
+
+<div id="app4" class="sample">
+    <div v-bind:class="[activeClass, errorClass]">
+        배열로 전달한 class명
+    </div>
+
+    <div v-bind:class="[isActive ? activeClass : '', error?errorClass:'' ]">
+        삼항 연산자를 이용한 class 전달
+    </div>
+    <button v-on:click="isActive=!isActive" >Toggle [active]class</button>
+    <button v-on:click="error = !error" >Toggle ['text-danger']class</button>
+
+</div>
+<script>
+    var app4 = new Vue({
+        el:'#app4',
+        data: {
+            isActive:true,
+            error:true,
+            activeClass: 'active',
+            errorClass: 'text-danger'
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>컴퍼넌트에 class 적용</h2>
+<div class="comments">
+    사용자 정의 컴포넌트로 class 속성을 사용하면, 클래스가 컴포넌트의 루트 엘리먼트에 추가 됩니다.<br>
+    이 엘리먼트는 기존 클래스는 덮어쓰지 않습니다.
+</div>
+
+<div id="app5" class="sample">
+    <my-component ></my-component>
+    <my-component class="active"></my-component>
+    <my-component class="text-danger"></my-component>
+</div>
+<script>
+    Vue.component('my-component', {
+        template: '<p class="child">I am child component</p>'
+    })
+
+    var app5 = new Vue({
+        el:'#app5',
+        data: {
+        }
+    })
+</script>
+
+
+</body>
+</html>

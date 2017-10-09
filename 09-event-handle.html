@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이벤트 핸들링</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>이벤트 리스닝</h2>
+<div class="comments">
+    v-on:이벤트명="action"<br>
+    약어사용 @이벤트명="action
+</div>
+<div id="example-1" class="sample">
+    <button v-on:click="counter += 1">Add 표현식</button>
+    <button v-on:click="increase">Add 함수호출</button>
+    <button v-on:click="increaseWithTag('hi')">인라인함수</button>
+    <button v-on:click="increaseWithTag('hi',$event)">인라인함수-DOM 이벤트전달</button>
+    <p>위 버튼을 클릭한 횟수는 {{ counter }} 번 입니다.</p>
+    <p>발생한 이벤트 {{message}}</p>
+</div>
+
+<script>
+    var example1 = new Vue({
+        el: '#example-1',
+        data: {
+            counter: 0,
+            message:''
+        },
+        methods:{
+            increase: function(event){
+                this.counter ++;
+                if (event) {
+                    this.message = event.target.toString();
+                }else{
+                    this.message = '';
+                }
+            },
+            increaseWithTag: function(tag, event){
+                this.counter ++;
+                if (event) {
+                    this.message = tag + ":" + event.target.toString();
+                }else{
+                    this.message = '';
+                }
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>이벤트 수식</h2>
+<div class="comments">
+    event.preventDefault() 또는 event.stopPropagation() 등의 추가 로직을 선언만으로 처리.<br>
+    click.stop click.capture 등등
+</div>
+<div id="app3" class="sample">
+    <!-- 클릭 이벤트 전파가 중단됩니다 -->
+    <a v-on:click.stop="doThis"></a>
+
+    <!-- 제출 이벤트가 페이지를 다시 로드 하지 않습니다 -->
+    <form v-on:submit.prevent="onSubmit"></form>
+
+    <!-- 수식어는 체이닝 가능합니다 -->
+    <a v-on:click.stop.prevent="doThat"></a>
+
+    <!-- 단순히 수식어만 사용할 수 있습니다 -->
+    <form v-on:submit.prevent></form>
+
+    <!-- 이벤트 리스너를 추가할 때 캡처모드를 사용합니다 -->
+    <!--  즉, 내부 엘리먼트를 대상으로 하는 이벤트가 해당 엘리먼트에서 처리되기 전에 여기서 처리합니다. -->
+    <div v-on:click.capture="doThis">...</div>
+
+    <!-- event.target이 엘리먼트 자체인 경우에만 트리거를 처리합니다 -->
+    <!-- 자식 엘리먼트에서는 안됩니다 -->
+    <div v-on:click.self="doThat">...</div>
+
+    <!-- 클릭 이벤트는 최대 한번만 트리거 됩니다. -->
+    <a v-on:click.once="doThis"></a>
+</div>
+<script>
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>인풋KEY 수식</h2>
+<div class="comments">
+    키보드 이벤트의 관심있는 key 값을 선언하여 해당 키값인 경우에만 작동하도록 함.<br>
+    <strong>키 수식어 별칭</strong><br>
+    .enter .tab .delete (“Delete” 와 “Backspace” 키 모두를 캡처합니다) .esc .space .up .down .left .right
+</div>
+
+<div id="app4" class="sample">
+    두개의 결과는 동일. 엔터키를 치면 trigger.<br>
+    <input v-on:keyup.enter="onEnter">
+    <input v-on:keyup.13="onEnter">
+</div>
+<script>
+    var app4 = new Vue({
+        el:'#app4',
+        data: {
+        },
+        methods:{
+            onEnter: function(){
+                alert( "Pressed Enter" );
+            },
+        }
+    })
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>컴퍼넌트 - 슬롯을 사용한 컨텐츠 배포</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+
+</head>
+<body>
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>단일 슬롯</h2>
+<div class="comments">
+    <pre>
+        상위 컴퍼넌트에서 컨텐츠를 구성할 내용을 하위 컴퍼넌트에 전달할 수 있다.
+        하위 컴퍼넌트는 < slot> 을 상위 컴퍼넌트에서 전달한 내용으로 대체한다.
+    </pre>
+</div>
+
+<div id="app1" class="sample">
+    <h1>나는 부모 컴포넌트의 제목입니다</h1>
+    <app1-comp>
+        <!-- 아래 내용이 app1-comp의 slot 영역에 주입된다. -->
+        <p>이것은 원본 컨텐츠 입니다.</p>
+        <p>이것은 원본 중 추가 컨텐츠 입니다</p>
+    </app1-comp>
+</div>
+
+<script>
+    Vue.component('app1-comp', {
+        template:
+            '<div>' +
+            '<h2>자식 컴퍼넌트의 제목</h2>    ' +
+            '<slot>자식 컴퍼넌트내용 : 부모에서 제공하는 컨텐츠가 없는 경우 여기가 보임.</slot>' +
+            '</div>',
+    })
+
+
+    new Vue({
+        el:'#app1',
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>이름을 가진 슬롯</h2>
+<div class="comments">
+    <pre>
+        name 속성을 가진 slol으로 레이아웃 구성이 가능. 부모(slot='slotname') 자식(slot name='slotname').
+        부모에서 slot 속성을 지정하지 않은 컨텐츠는 자식에서 name속성을 지정하지 않은 슬롯으로 주입됨.
+    </pre>
+</div>
+
+<div id="app2" class="sample">
+    <app2-comp>
+        <h1 slot="header">헤더 영역</h1>
+        <p>메인 컨텐츠의 단락입니다.</p>
+        <p>하나 더 있습니다.</p>
+        <p slot="footer">푸터 영역</p>
+    </app2-comp>
+</div>
+
+<script>
+    Vue.component('app2-comp', {
+        template:
+        '<div class="container">\
+            <header>\
+                <slot name="header"></slot>\
+            </header>\
+            <main>\
+                <slot></slot>\
+            </main>\
+            <footer>\
+                <slot name="footer"></slot>\
+            </footer>\
+        </div>',
+    })
+
+    new Vue({
+        el:'#app2',
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>범위를 가지는 슬롯</h2>
+<div class="comments">
+    <pre>
+        하위 컴퍼넌트에서 사용될 템플릿을 상위 컴퍼넌트에서 전달할 수 있음.
+        상위 컴퍼넌트에서 scope='props' 속성을 가진 template을  하위 컴퍼넌트의 slot으로 주입함.
+        넘겨진 template을 하위 컴퍼넌트의 slot에서 활용함.
+        만들어진 DOM 엘레먼트가 아닌, template을 전달함으로써 하위 컴퍼넌트의 구성을 제어할 수 있음.
+    </pre>
+</div>
+
+<div id="app3" class="sample">
+    <div class="parent">
+        <app3-comp>
+            <template scope="props">
+                <p>부모에서 정의한 내용</p>
+                <p>자식:props.text={{ props.text }}</p>
+            </template>
+        </app3-comp>
+    </div>
+</div>
+
+<script>
+    Vue.component('app3-comp', {
+        template:
+            '<div class="child">\
+                <slot text="자식SLOT의 TEXT"></slot>\
+            </div>',
+    })
+
+    new Vue({
+        el:'#app3',
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>범위를 가지는 슬롯 -  활용</h2>
+<div class="comments">
+    <pre>
+        컴포넌트 사용자가 목록의 각 항목을 렌더링하는 방법을 지정할 수 있는 리스트 컴포넌트
+    </pre>
+</div>
+
+<div id="app3-1" class="sample">
+    <div class="parent">
+        <app3-1-comp v-bind:items="items">
+            <!-- app3-1-comp 컴퍼넌트의 slot에서 사용할 템플릿-->
+            <template slot="item" scope="props">
+                <li>{{ props.pk}} : {{ props.title }} : {{ props.contents}}</li>
+            </template>
+        </app3-1-comp>
+    </div>
+</div>
+
+<script>
+    Vue.component('app3-1-comp', {
+        props:['items'],
+        template:
+            '<ul>\
+                <slot name="item"\
+                    v-for="item in items"\
+                    v-bind:pk="item.pk"\
+                    v-bind:title="item.title"\
+                    v-bind:contents="item.contents">\
+                <!-- 대체 컨텐츠는 여기입니다. -->\
+                </slot>\
+            </ul>',
+    })
+
+    new Vue({
+        el:'#app3-1',
+        data:{
+            items:[
+                {pk:'01', title:'title-01', contents:'contents-01'},
+                {pk:'02', title:'title-02', contents:'contents-02'},
+                {pk:'03', title:'title-03', contents:'contents-03'},
+            ]
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>범위를 가지는 슬롯 -  활용2</h2>
+<div class="comments">
+    <pre>
+        컴포넌트 사용자가 목록의 각 항목을 렌더링하는 방법을 지정할 수 있는 리스트 컴포넌트
+    </pre>
+</div>
+
+<div id="app3-2" class="sample">
+    <table>
+        <tr>
+            <td>PK</td>
+            <td>TITLE</td>
+            <td>CONTENTS</td>
+        </tr>
+        <!-- is 속성 주의 -->
+        <tr is="my-tr" v-for="item in items" v-bind:comp-item="item">
+            <template slot="tr-slot" scope="props">
+                <td>{{ props.pk}}</td>
+                <td>{{ props.title }}</td>
+                <td>{{ props.contents}}</td>
+            </template>
+        </tr>
+    </table>
+    <p> </p>
+
+    <table>
+        <tr>
+            <td>NO</td>
+            <td>제목</td>
+            <td>내용</td>
+            <td>저자</td>
+        </tr>
+        <!-- is 속성 주의 -->
+        <tr is="my-tr" v-for="item in items" v-bind:comp-item="item">
+            <template slot="tr-slot" scope="props">
+                <td>{{ props.obj.pk}}</td>
+                <td>{{ props.obj.title }}</td>
+                <td>{{ props.obj.contents}}</td>
+                <td>{{ props.obj.author}}</td>
+            </template>
+        </tr>
+    </table>
+
+</div>
+
+<script>
+    Vue.component('my-tr', {
+        props:['compItem'],
+        template:
+            '<tr>\
+                <slot name="tr-slot"\
+                    v-bind:obj="compItem"\
+                    v-bind:pk="compItem.pk"\
+                    v-bind:title="compItem.title"\
+                    v-bind:contents="compItem.contents">\
+                </slot>\
+            </tr>',
+    })
+
+    new Vue({
+        el:'#app3-2',
+        data:{
+            items:[
+                {pk:'01', title:'title-01', contents:'contents-01', author:'kmc774'},
+                {pk:'02', title:'title-02', contents:'contents-02', author:'kmc774'},
+                {pk:'03', title:'title-03', contents:'contents-03', author:'kmc774'},
+            ]
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>동적 컴퍼넌트 전환 1</h2>
+<div class="comments">
+    <pre>
+        < component> 엘리먼트를 사용하여 여러 컴포넌트를 동적으로 전환
+        is 속성을 활용
+    </pre>
+</div>
+
+<div id="app4" class="sample">
+
+    <component v-bind:is="currentView">
+    </component>
+
+    <button v-on:click="toggle">전환하기</button>
+</div>
+
+<script>
+    new Vue({
+        el:'#app4',
+        data:{
+            currentView: 'home',
+            index:0
+        },
+        components: {
+            home: {
+                template:'<p>Home Component</p>'
+            },
+            posts: {
+                template:'<p>Posts Component</p>'
+            }
+        },
+        methods:{
+            toggle:function() {
+                this.index = (this.index + 1) % 2;
+                switch (this.index){
+                    case 1:
+                        this.currentView = 'posts';
+                        break;
+                    default:
+                        this.currentView = 'home';
+                        break;
+                }
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>동적 컴퍼넌트 전환 2</h2>
+<div class="comments">
+    <pre>
+        컴퍼넌트 속성을 직접 바인딩하여 전환
+    </pre>
+</div>
+
+<div id="app4-1" class="sample">
+
+    <component v-bind:is="currentView">
+    </component>
+
+    <button v-on:click="toggle">전환하기</button>
+</div>
+
+<script>
+    var homeComponent = {
+        template:'<p>Home Component</p>'
+    };
+    var postsComponent = {
+        template:'<p>Posts Component</p>'
+    };
+
+    new Vue({
+        el:'#app4-1',
+        data:{
+            currentView: homeComponent,
+            index:0
+        },
+        methods:{
+            toggle:function() {
+                this.index = (this.index + 1) % 2;
+                switch (this.index){
+                    case 1:
+                        this.currentView = postsComponent;
+                        break;
+                    default:
+                        this.currentView = homeComponent;
+                        break;
+                }
+            }
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>동적 컴퍼넌트 전환 3 - 캐쉬</h2>
+<div class="comments">
+    <pre>
+        전환된 컴포넌트를 메모리에 유지하여 상태를 보존하거나 다시 렌더링하지 않도록하려면 동적 컴포넌트를 < keep-alive> 엘리먼트에 래핑
+    </pre>
+</div>
+
+<div id="app4-2" class="sample">
+
+    <keep-alive>
+        <component v-bind:is="currentView">
+        </component>
+    </keep-alive>
+
+
+    <button v-on:click="toggle">전환하기</button>
+</div>
+
+<script>
+    new Vue({
+        el:'#app4-2',
+        data:{
+            currentView: 'home',
+            index:0
+        },
+        components: {
+            home: {
+                template:'<p>Home Component<input type="text"></p>'
+            },
+            posts: {
+                template:'<p>Posts Component<input type="text"></p>'
+            }
+        },
+        methods:{
+            toggle:function() {
+                this.index = (this.index + 1) % 2;
+                switch (this.index){
+                    case 1:
+                        this.currentView = 'posts';
+                        break;
+                    default:
+                        this.currentView = 'home';
+                        break;
+                }
+            }
+        }
+    })
+</script>
+
+
+
+</body>
+</html>

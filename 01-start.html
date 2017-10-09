@@ -1,0 +1,235 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Vue 시작하기</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>인스턴스 생성 및 랜더링</h2>
+<div class="comments">
+    Vue() 를 호출함으로써 인스턴스 생성.<br>
+    vue.el속성(selector)과 DOM엘레먼트 id가 매핑됨
+</div>
+
+<div id="app1" class="sample">
+    {{ message }}
+</div>
+<script>
+    var app1 = new Vue({
+        el: '#app1',
+        data: {
+            message: '안녕하세요 Vue!'
+        }
+    })
+    /**
+     * 아래와 같이 모델의 값을 변경하면 뷰에도 즉시 반영된다.
+     * 브라우져에서 script 콘솔을 열고 테스트 해보자.
+     * app1.message = '변경된 메시지';
+     */
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>인스턴스 data 객체</h2>
+<div class="comments">
+    Vue 인스턴스의 data객체의 속성은 Vue인스턴스를 통해 직접 접근이 가능하다.<br>
+    data를 객체로 만들어서 Vue 생성시 전달하게 되면, 동일한 객체참조가 이루어지므로 주의해야 한다.
+</div>
+
+<div id="app2" class="sample">
+    <span>a={{ a }}</span>
+</div>
+<script>
+    var data = { a: 1 }
+    var app2 = new Vue({
+        el: '#app2',
+        data: data
+    })
+    console.log( "app2.a === data.a => " + ( app2.a === data.a )  );    //동일 객체 참조
+    console.log( "app2.a => " + ( app2.a)  );   // => 1
+    console.log( "data.a => " + ( data.a )  );  // => 1
+
+    data.a = 3  // app2의 data에 사이드이펙트 발생
+    console.log( "data.a => " + ( data.a )  );  // => 3
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>인스턴스 생성 후 data 속성 추가(반응형 작동 안함)</h2>
+<div class="comments"></div>
+
+<div id="app3" class="sample">
+    <!-- [Vue warn]: Property or method "b" is not defined... -->
+    <p>a={{ a }}</p>
+    <p>b={{ b }}</p>
+</div>
+<script>
+    var data = { a: 1 }
+    var app3 = new Vue({
+        el: '#app3',
+        data: data
+    })
+
+    app3.b = 'hi';
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>$를 이용한 인스턴스 속성,메서드 접근</h2>
+<div class="comments">
+    $ 접두어로 사용자 정의 속성과 구별<br>
+    $data $el $watch 등등
+</div>
+
+<div id="app4" class="sample">
+    {{ a }}
+</div>
+<script>
+    var data4 = { a: 1 }
+    var app4 = new Vue({
+        el: '#app4',
+        data: data4
+    })
+
+    app4.$data === data4 // => true
+
+    app4.$el === document.getElementById('app4') // => true
+
+    // $watch 는 인스턴스 메소드 입니다.
+    app4.$watch('a', function (newVal, oldVal) {
+        // `vm.a`가 변경되면 호출 됩니다.
+    })
+</script>
+
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>동적 속성 바인딩</h2>
+<div class="comments">
+    v-bind 를 통해 엘레먼트의 속성값에 vue의 data를 바인딩 할 수 있다.
+</div>
+<div id="app5" class="sample">
+  <span v-bind:title="message">
+    내 위에 잠시 마우스를 올리면 동적으로 바인딩 된 title을 볼 수 있습니다!
+  </span>
+</div>
+<script>
+    var app5 = new Vue({
+        el: '#app5',
+        data: {
+            message: '이 페이지는 ' + new Date() + ' 에 로드 되었습니다'
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>조건문</h2>
+<div class="comments">
+    표현식이나 모델의 속성,메서드의 값을 통해 선택적 랜더링이 가능
+</div>
+<div id="app6" class="sample">
+    <p v-if="seen">이제 나를 볼 수 있어요(v-if)</p>
+    <p v-show="seen">이제 나를 볼 수 있어요(v-show)</p>
+
+    <input type="button" @click="seen=!seen" value="Toggle">
+</div>
+<script>
+    var app6 = new Vue({
+        el: '#app6',
+        data: {
+            seen: true
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>반복문</h2>
+<div class="comments"></div>
+<div id="app7" class="sample">
+    <ol>
+        <li v-for="todo in todos">
+            {{ todo.text }}
+        </li>
+    </ol>
+</div>
+<script>
+    var app7 = new Vue({
+        el: '#app7',
+        data: {
+            todos: [
+                { text: 'JavaScript 배우기' },
+                { text: 'Vue 배우기' },
+                { text: '무언가 멋진 것을 만들기' }
+            ]
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>사용자 입력 핸들링</h2>
+<div class="comments"></div>
+<div id="app8" class="sample">
+    <p>{{ message }}</p>
+    <button v-on:click="reverseMessage">메시지 뒤집기</button>
+</div>
+<script>
+    var app8 = new Vue({
+        el: '#app8',
+        data: {
+            message: '안녕하세요! Vue.js!'
+        },
+        methods: {
+            reverseMessage: function () {
+                this.message = this.message.split('').reverse().join('')
+            }
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>양방향 바인딩</h2>
+<div class="comments"></div>
+<div id="app9" class="sample">
+    <p>{{ message }}</p>
+    <input v-model="message">
+</div>
+<script>
+    var app9 = new Vue({
+        el: '#app9',
+        data: {
+            message: '안녕하세요 Vue!'
+        }
+    })
+</script>
+
+
+</body>
+</html>

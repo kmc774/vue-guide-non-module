@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>컴퍼넌트 1 - 컴퍼넌트 작성 및 사용</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- body 하단으로 이동해야 함 -->
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>컴퍼넌트 등록 - 전역</h2>
+<div class="comments">
+    전역등록 후 어디에서나 커스텀 엘레먼트로 컴퍼넌트 사용 가능
+</div>
+<div id="app1" class="sample">
+    <my-component></my-component>
+    <my-component></my-component>
+</div>
+
+<script>
+    Vue.component('my-component', {
+        template: '<p class="child">I am child component</p>'
+    })
+
+    new Vue({
+        el:'#app1',
+        data: {}
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>컴퍼넌트 등록 - 로컬</h2>
+<div class="comments">
+    인스턴스에 등록함으로써 해당 인스턴스 내에서만 사용 가능하도록 함
+</div>
+<div id="app2" class="sample">
+    <my-component></my-component>
+    <my-component></my-component>
+</div>
+
+<script>
+    var componentOption = {
+        template: '<p class="child">I am child component</p>'
+    }
+
+    new Vue({
+        el:'#app2',
+        data: {},
+        components:{
+            'my-component' : componentOption
+        }
+    })
+</script>
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>DOM 구문분석 경고</h2>
+<div class="comments">
+    <pre>
+    DOM을 템플릿으로 사용할 때 (예 : el 옵션을 사용하여 기존 콘텐츠가 있는 엘리먼트를 마운트하는 경우)
+    &lt;ul&gt;,&lt;ol&gt;,&lt;table&gt;과&lt;select&gt;와 같은 일부 엘리먼트는 그 안에 어떤 엘리먼트가 나타날 수 있는지에 대한 제한을 가지고 있음.<br>
+    따라서 다음과 같은 구문은 구문분석 시 에러를 발생 시킴.<br>
+    < table >
+        < my-component >< /my-component >
+    < /table>
+
+    해결방법으로써 특수한 속성 is 를 사용.
+    < table>
+        < tr is="my-component">< /tr>
+    < /table>
+
+
+    다음 소스 중 하나에 포함되면 문자열 템플릿을 사용하는 경우에는 이러한 제한 사항이 적용되지 않습니다.:
+    < script type="text/x-template" >
+    JavaScript 인라인 템플릿 문자열
+    .vue 컴포넌트
+
+    -- 정확히 어떤 케이스인지 감이 오지 않음.
+
+    </pre>
+</div>
+<div id="app3" class="sample">
+    <table>
+        <my-row></my-row>
+        <my-row></my-row>
+        <my-row></my-row>
+    </table>
+</div>
+
+<script>
+    var componentOption = {
+        template: '<tr><td>I am child component 잘 되는데??</td></tr>'
+    };
+
+    new Vue({
+        el:'#app3',
+        data: {},
+        components:{
+            'my-row' : componentOption
+        }
+    })
+</script>
+
+
+
+<!----------------------------------------------------------------->
+<hr>
+<h2>data는 반드시 function이어야 함</h2>
+<div class="comments">
+    <pre>
+    component 옵션의 data를 함수가 아닌 값으로 정의하게 되면, Vue에서 에러 발생.
+    data는 반드시 function으로 제공되어야 함.
+    이때, 제공되는 data 객체의 공유/비공유되는 상황을 명확히 알아야 함.
+    </pre>
+</div>
+<div id="app4" class="sample">
+    <div>
+        데이타가 공유되는 컴퍼넌트들
+        <shared-counter></shared-counter>
+        <shared-counter></shared-counter>
+        <shared-counter></shared-counter>
+    </div>
+    <div>
+        데이타가 공유되지 않는 컴퍼넌트들
+        <instance-counter></instance-counter>
+        <instance-counter></instance-counter>
+        <instance-counter></instance-counter>
+    </div>
+</div>
+
+<script>
+    var sharedData = { counter: 0 }
+    Vue.component('shared-counter', {
+        template: '<button v-on:click="counter += 1">{{ counter }}</button>',
+        /*data: { counter: 0 } Vue에서 에러발생 후 실행되지 않음.*/
+        data: function(){
+            return sharedData;
+        }
+    })
+    Vue.component('instance-counter', {
+        template: '<button v-on:click="counter += 1">{{ counter }}</button>',
+        /*data: { counter: 0 } Vue에서 에러발생 후 실행되지 않음.*/
+        data: function(){
+            return { counter: 0 };
+        }
+    })
+
+    new Vue({
+        el:'#app4',
+    })
+</script>
+
+
+
+
+</body>
+</html>
